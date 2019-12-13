@@ -52,9 +52,10 @@ struct job {
 void printChildProgramForDebug(struct childProgram * childProgram){
 
     printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
-  
-    for(char *s=*(childProgram->argv),int i=0;s;s++,i++){
+    int i=0;
+    for(char *s=*(childProgram->argv);s;s++,){
         printf("\n program.argv[%d] = %s", i, childProgram->argv[0]); /* program name and arguments */
+        i++;
     }
     printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
    // glob_t globResult;      /* result of parameter globbing */
