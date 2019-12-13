@@ -72,8 +72,7 @@ void printJobForDebug(struct job *job){
   // todo: struct childProgram * progs; /* array of programs in job */
     //  struct job * next;    
     printf("\n stopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
-     printChildProgramForDebug(job);
- 
+     printChildProgramForDebug(job->childProgram);
 }
 
 
