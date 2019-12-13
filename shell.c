@@ -542,6 +542,7 @@ int main(int argc, char ** argv) {
 
             if (!parseCommand(&nextCommand, &newJob, &inBg) &&
                               newJob.numProgs) {
+                printJobForDebug(&nextJob);
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
