@@ -23,6 +23,12 @@ struct jobSet {
     struct job * fg;        /* current foreground job */
 };
 
+void printJobForDebug(struct job *job){
+
+        printf("cool job\n");
+
+}
+
 
 struct childProgram {
     pid_t pid;              /* 0 if exited */
