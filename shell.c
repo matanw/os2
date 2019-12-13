@@ -65,14 +65,14 @@ void printJobForDebug(struct job *job){
     printf("A job:");
     printf("\njob id: %d,",job->jobId);              /* job number */
     printf("\nnum progs:%d,",job->numProgs);           /* total number of programs in job */
-    printf("\n running progs: %d,", job->runningProgs);       /* number of programs running */
-    printf("\n text: %s,",job->text);            /* name of job */
+    printf("\nrunning progs: %d,", job->runningProgs);       /* number of programs running */
+    printf("\ntext: %s,",job->text);            /* name of job */
     printf("\ncmd buf: %s,",job->cmdBuf);          /* buffer various argv's point into */
-    printf("\n pgrp = %jd\n", (intmax_t) job->pgrp);// pid_t pgrp;/* process group ID for the job */
+    printf("\npgrp = %jd\n", (intmax_t) job->pgrp);// pid_t pgrp;/* process group ID for the job */
   // todo: struct childProgram * progs; /* array of programs in job */
     //  struct job * next;    
-    printf("\n stopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
-     printChildProgramForDebug(job->progs);
+    printf("\nstopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
+    printChildProgramForDebug(job->progs);
 }
 
 
