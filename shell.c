@@ -53,7 +53,9 @@ void printChildProgramForDebug(struct childProgram * childProgram){
 
     printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
   
-    printf("\n program.argv[0] = %s", childProgram->argv[0]); /* program name and arguments */
+    for(char *s=*(childProgram->argv),int i=0;s;s++,i++){
+        printf("\n program.argv[%d] = %s", i, childProgram->argv[0]); /* program name and arguments */
+    }
     printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
    // glob_t globResult;      /* result of parameter globbing */
     printf("\n program.freeGlob = %d", childProgram->freeGlob);           /* should we globfree(&globResult)? */
@@ -390,6 +392,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         }
 
         if (!(newJob.progs[i].pid = fork())) {
+            //chikd code 
             signal(SIGTTOU, SIG_DFL);
 
             if (nextin != 0) {
