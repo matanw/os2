@@ -56,7 +56,7 @@ void printChildProgramForDebug(struct childProgram * childProgram){
     for(char *s=*(childProgram->argv);s;s++){
         printf("\n program.argv[%d] = %s", i, s); 
         i++;
-    }*//
+    }*/
     for(char i=0;childProgram->argv[i];i++){
         printf("\n program.argv[%d] = %s", i, childProgram->argv[i]); 
         i++;
