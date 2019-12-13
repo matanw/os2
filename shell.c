@@ -53,7 +53,7 @@ void printChildProgramForDebug(struct childProgram * childProgram){
 
     printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
     int i=0;
-    for(char *s=*(childProgram->argv);s;s++,){
+    for(char *s=*(childProgram->argv);s;s++){
         printf("\n program.argv[%d] = %s", i, childProgram->argv[0]); /* program name and arguments */
         i++;
     }
