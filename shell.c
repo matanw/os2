@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <stdint.h>// for debug print
+
 #define MAX_COMMAND_LEN 250     /* max length of a single command 
                                    string */
 #define JOB_STATUS_FORMAT "[%d] %-22s %.40s\n"
@@ -23,11 +25,6 @@ struct jobSet {
     struct job * fg;        /* current foreground job */
 };
 
-void printJobForDebug(struct job *job){
-
-        printf("cool job\n");
-
-}
 
 
 struct childProgram {
@@ -51,6 +48,35 @@ struct job {
     struct job * next;      /* to track background commands */
     int stoppedProgs;       /* number of programs alive, but stopped */
 };
+
+void printChildProgramForDebug(struct childProgram * childProgram){
+{
+    printf("\n program.pid = %d", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
+  
+    printf("\n program.argv[0] = %s", childProgram->argv[0]); /* program name and arguments */
+    printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
+   // glob_t globResult;      /* result of parameter globbing */
+    printf("\n program.freeGlob = %d", childProgram->freeGlob);           /* should we globfree(&globResult)? */
+    printf("\n program.isStopped = %d",,childProgram->isStopped);          /* is the program currently running? */
+}
+void printJobForDebug(struct job *job){
+
+    printf("A job:");
+    printf("\njob id: %d,",job->jobId);              /* job number */
+    printf("\nnum progs:%d,",job->numProgs);           /* total number of programs in job */
+    printf("\n running progs: %d,", job->runningProgs);       /* number of programs running */
+    printf("\n text: %s,",job->text);            /* name of job */
+    printf("\ncmd buf: %s,",job->cmdBuf);          /* buffer various argv's point into */
+    printf("\n pgrp = %jd\n", (intmax_t) job->pgrp);// pid_t pgrp;/* process group ID for the job */
+  // todo: struct childProgram * progs; /* array of programs in job */
+    printChildProgramForDebug(job)
+  //  struct job * next;    
+     printf("\n stopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
+
+
+
+}
+
 
 void freeJob(struct job * cmd) {
     int i;
