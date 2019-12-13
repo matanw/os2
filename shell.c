@@ -59,7 +59,6 @@ void printChildProgramForDebug(struct childProgram * childProgram){
     }*/
     for(char i=0;childProgram->argv[i];i++){
         printf("\n program.argv[%d] = %s", i, childProgram->argv[i]); 
-        i++;
     }
     printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
    // glob_t globResult;      /* result of parameter globbing */
