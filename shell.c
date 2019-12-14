@@ -368,8 +368,8 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         //            job->text);
  	// while statusString is one of the {Stopped, Running}
         for(struct job *job=jobList->head; job;job=job->next){
-          printf(JOB_STATUS_FORMAT, job->jobId, "Running",  job->text);
-          printf("all:%d, stopped - %d\n",job->numProgs, job->stoppedProgs);
+          printf(JOB_STATUS_FORMAT, job->jobId, (job->numProgs==job->stoppedProgs?
+           "Stopped": "Running"),  job->text);
         }
 
 
