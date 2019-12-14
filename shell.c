@@ -83,6 +83,7 @@ void printJobForDebug(struct job *job){
         printf("\nprint prog %d",i);
         printChildProgramForDebug((job->progs)+i);
     }
+    printf("\n");
 }
 
 
@@ -368,6 +369,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
  	// while statusString is one of the {Stopped, Running}
         for(struct job *job=jobList->head; job;job=job->next){
           printf(JOB_STATUS_FORMAT, job->jobId, "Running",  job->text);
+          printf("all:%d, stopped - %d\n",job->numProgs, jobs->stoppedProgs;);
         }
 
 
