@@ -325,6 +325,29 @@ int parseCommand(char ** commandPtr, struct job * job, int * isBg) {
     return 0;
 }
 
+struct job * findJob(struct jobSet * jobList, int jobId){
+
+    for(struct job *job=jobList->head; job;job=job->next){
+        if (job->jobId==jobId){
+            return job;
+        }
+    }
+    return NULL;
+}
+
+
+/*if token is number, returns 0 , and put its number in output.
+otherwise, returns 1*/
+int parseNumber(char *token, int *output) {
+    char *ptr;
+    long num = strtol(token, &ptr, 10);
+    if (ptr == token || *ptr != '\0') {
+        return 1;
+    }
+    *output = num;
+    return 0;
+}
+
 
 int runCommand(struct job newJob, struct jobSet * jobList, 
                int inBg) {
@@ -361,13 +384,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
                     strerror(errno));
         return 0;
     } else if (!strcmp(newJob.progs[0].argv[0], "jobs")) {
-        // FILL IN HERE
-        // Scan the job list and print jobs' status
-	// using the following function 
-        //    printf(JOB_STATUS_FORMAT, job->jobId, statusString,
-        //            job->text);
- 	// while statusString is one of the {Stopped, Running}
-        for(struct job *job=jobList->head; job;job=job->next){
+         for(struct job *job=jobList->head; job;job=job->next){
           printf(JOB_STATUS_FORMAT, job->jobId, (job->numProgs==job->stoppedProgs?
            "Stopped": "Running"),  job->text);
         }
@@ -388,6 +405,27 @@ int runCommand(struct job newJob, struct jobSet * jobList,
 	// In any case restart the processes in the job by calling 
 	// kill(-job->pgrp, SIGCONT). Don't forget to set isStopped = 0   
 	// in every proicess and stoppedProgs = 0 in the job
+        char * arg=newJob.progs[0].args[1];
+        if(*arg!='%'){
+              fprintf(stderr, "invalid format\n");
+              retrun 1;
+        }
+
+        int jobId;
+        if(parseNumber(++arg,&jobId)){
+              fprintf(stderr, "not a number\n");
+              retrun 1;
+        }
+        job=findJob(jobList,jobId);
+        if(!job){
+              fprintf(stderr, "job not found\n");
+              retrun 1;
+        }
+        if(strcmp(newJob.progs[0].argv[0], "fg")==0){
+            printf("give it to fg-%d\n",jobId);
+        } else{
+            printf("give it to bg-%d\n",jobId);
+        }
 
         return 0;
     }
@@ -583,7 +621,7 @@ int main(int argc, char ** argv) {
 
             if (!parseCommand(&nextCommand, &newJob, &inBg) &&
                               newJob.numProgs) {
-                printJobForDebug(&newJob);
+               // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
