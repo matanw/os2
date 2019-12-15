@@ -405,21 +405,21 @@ int runCommand(struct job newJob, struct jobSet * jobList,
 	// In any case restart the processes in the job by calling 
 	// kill(-job->pgrp, SIGCONT). Don't forget to set isStopped = 0   
 	// in every proicess and stoppedProgs = 0 in the job
-        char * arg=newJob.progs[0].args[1];
+        char *arg=newJob.progs[0].argv[1];
         if(*arg!='%'){
               fprintf(stderr, "invalid format\n");
-              retrun 1;
+              return 1;
         }
 
         int jobId;
         if(parseNumber(++arg,&jobId)){
               fprintf(stderr, "not a number\n");
-              retrun 1;
+              return 1;
         }
         job=findJob(jobList,jobId);
         if(!job){
               fprintf(stderr, "job not found\n");
-              retrun 1;
+              return 1;
         }
         if(strcmp(newJob.progs[0].argv[0], "fg")==0){
             printf("give it to fg-%d\n",jobId);
