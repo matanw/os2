@@ -422,7 +422,12 @@ int runCommand(struct job newJob, struct jobSet * jobList,
               return 1;
         }
         if(strcmp(newJob.progs[0].argv[0], "fg")==0){
-            printf("give it to fg-%d\n",jobId);
+            printf("give it to fg-%d , handle only bg to fg now\n",jobId);
+
+            jobList->fg = job;
+            if (tcsetpgrp(0, job->pgrp))
+                perror("tcsetpgrp");
+
         } else{
             printf("give it to bg-%d\n",jobId);
         }
