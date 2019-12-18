@@ -57,7 +57,7 @@ void markJobAsRunning(struct job* job){
     {
        ((job->progs)+i)->isStopped=0;//todo: readability
     }
-    jobs->stoppedProgs=0;
+    job->stoppedProgs=0;
 
 }
 
