@@ -425,10 +425,15 @@ int runCommand(struct job newJob, struct jobSet * jobList,
             printf("give it to fg-%d , handle only bg to fg now\n",jobId);
 
             jobList->fg = job;
+            printf("a1\n");
+
             if (tcsetpgrp(0, job->pgrp))
                 perror("tcsetpgrp");
-            
+
+            printf("a2\n");
             kill(-job->pgrp, SIGCONT);
+
+            printf("a3\n");
 
         } else{
             printf("give it to bg-%d\n",jobId);
@@ -630,6 +635,7 @@ int main(int argc, char ** argv) {
                               newJob.numProgs) {
                // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
+                printf("a4\n");
             }
         } else {
             /* a job is running in the foreground; wait for it */
