@@ -451,6 +451,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
 
         } else{
             printf("give it to bg-%d\n",jobId);
+            //dummy
         }*/
 
         if(strcmp(newJob.progs[0].argv[0], "fg")==0){
