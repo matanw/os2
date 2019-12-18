@@ -431,7 +431,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
                 perror("tcsetpgrp");
 
             printf("a2\n");
-            kill(-job->pgrp, SIGCONT);
+          //  kill(-job->pgrp, SIGCONT);
 
             printf("a3\n");
 
