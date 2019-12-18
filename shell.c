@@ -431,7 +431,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
                 perror("tcsetpgrp");
 
             printf("a2\n");
-          //  kill(-job->pgrp, SIGCONT);
+          kill(-job->pgrp, SIGCONT);//todo : need to check errors
 
             printf("a3\n");
 
@@ -620,7 +620,10 @@ int main(int argc, char ** argv) {
     signal (SIGTTOU, SIG_IGN);  
  
     while (1) {
+
+        printf("b1\n");
         if (!jobList.fg) {
+            printf("b2\n");
             /* no job is in the foreground */
 
             /* see if any background processes have exited */
@@ -635,9 +638,10 @@ int main(int argc, char ** argv) {
                               newJob.numProgs) {
                // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
-                printf("a4\n");
+                printf("b3\n");
             }
         } else {
+            printf("b4\n");
             /* a job is running in the foreground; wait for it */
             i = 0;
             while (!jobList.fg->progs[i].pid ||
