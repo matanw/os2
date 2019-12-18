@@ -49,6 +49,18 @@ struct job {
     int stoppedProgs;       /* number of programs alive, but stopped */
 };
 
+
+void markJobAsRunning(struct job* job){
+    //todo: assert is it works for mor than one programs
+    job->runningProgs=job->numProgs;
+   for (int i = 0; i < job->numProgs; ++i)
+    {
+       ((job->progs)+i)->isStopped=0;//todo: readability
+    }
+    jobs->stoppedProgs=0;
+
+}
+
 void printChildProgramForDebug(struct childProgram * childProgram){
 
     printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
@@ -427,13 +439,15 @@ int runCommand(struct job newJob, struct jobSet * jobList,
             jobList->fg = job;
             printf("a1\n");
 
-            if (tcsetpgrp(0, job->pgrp))
+            if (tcsetpgrp(0, job->pgrp)){
                 perror("tcsetpgrp");
+            }
 
             printf("a2\n");
           kill(-job->pgrp, SIGCONT);//todo : need to check errors
 
             printf("a3\n");
+            markJobAsRunning(job);
 
         } else{
             printf("give it to bg-%d\n",jobId);
@@ -618,7 +632,8 @@ int main(int argc, char ** argv) {
     signal (SIGTSTP, SIG_IGN);
     signal (SIGTTIN, SIG_IGN);
     signal (SIGTTOU, SIG_IGN);  
- 
+ //
+//fg, a staff , b3 b1 b4 b1 b4
     while (1) {
 
         printf("b1\n");
