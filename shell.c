@@ -433,7 +433,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
               fprintf(stderr, "job not found\n");
               return 1;
         }
-        if(strcmp(newJob.progs[0].argv[0], "fg")==0){
+       /* if(strcmp(newJob.progs[0].argv[0], "fg")==0){
             printf("give it to fg-%d , handle only bg to fg now\n",jobId);
 
             jobList->fg = job;
@@ -451,8 +451,16 @@ int runCommand(struct job newJob, struct jobSet * jobList,
 
         } else{
             printf("give it to bg-%d\n",jobId);
-        }
+        }*/
 
+        if(strcmp(newJob.progs[0].argv[0], "fg")==0){
+            jobList->fg = job;
+            if (tcsetpgrp(0, job->pgrp)){
+                perror("tcsetpgrp");
+            }
+        }
+        kill(-job->pgrp, SIGCONT);//todo : need to check errors
+        markJobAsRunning(job);
         return 0;
     }
 
@@ -635,10 +643,7 @@ int main(int argc, char ** argv) {
  //
 //fg, a staff , b3 b1 b4 b1 b4
     while (1) {
-
-        printf("b1\n");
         if (!jobList.fg) {
-            printf("b2\n");
             /* no job is in the foreground */
 
             /* see if any background processes have exited */
@@ -653,10 +658,8 @@ int main(int argc, char ** argv) {
                               newJob.numProgs) {
                // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
-                printf("b3\n");
             }
         } else {
-            printf("b4\n");
             /* a job is running in the foreground; wait for it */
             i = 0;
             while (!jobList.fg->progs[i].pid ||
