@@ -425,6 +425,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
             printf("give it to fg-%d , handle only bg to fg now\n",jobId);
 
             jobList->fg = job;
+            kill(-job->pgrp, SIGCONT);
             if (tcsetpgrp(0, job->pgrp))
                 perror("tcsetpgrp");
 
