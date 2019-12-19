@@ -12,8 +12,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <stdint.h>// for debug print
-
 #define MAX_COMMAND_LEN 250     /* max length of a single command 
                                    string */
 #define JOB_STATUS_FORMAT "[%d] %-22s %.40s\n"
@@ -51,7 +49,6 @@ struct job {
 
 
 void markJobAsRunning(struct job* job){
-    //todo: assert is it works for mor than one programs
     job->runningProgs=job->numProgs;
    for (int i = 0; i < job->numProgs; ++i)
     {
@@ -59,43 +56,6 @@ void markJobAsRunning(struct job* job){
     }
     job->stoppedProgs=0;
 
-}
-
-void printChildProgramForDebug(struct childProgram * childProgram){
-
-    printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
-    /*int i=0;
-    for(char *s=*(childProgram->argv);s;s++){
-        printf("\n program.argv[%d] = %s", i, s); 
-        i++;
-    }*/
-    for(char i=0;childProgram->argv[i];i++){
-        printf("\n program.argv[%d] = %s", i, childProgram->argv[i]); 
-    }
-    printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
-   // glob_t globResult;      /* result of parameter globbing */
-    printf("\n program.freeGlob = %d", childProgram->freeGlob);           /* should we globfree(&globResult)? */
-    printf("\n program.isStopped = %d", childProgram->isStopped);          /* is the program currently running? */
-}
-
-void printJobForDebug(struct job *job){
-
-    printf("A job:");
-    printf("\njob id: %d,",job->jobId);              /* job number */
-    printf("\nrunning progs: %d,", job->runningProgs);       /* number of programs running */
-    printf("\ntext: %s,",job->text);            /* name of job */
-    printf("\ncmd buf: %s,",job->cmdBuf);          /* buffer various argv's point into */
-    printf("\npgrp = %jd\n", (intmax_t) job->pgrp);// pid_t pgrp;/* process group ID for the job */
-  // todo: struct childProgram * progs; /* array of programs in job */
-    //  struct job * next;    
-    printf("\nstopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
-    printf("\nnum progs:%d,",job->numProgs);           /* total number of programs in job */
-    for (int i = 0; i < job->numProgs; ++i)
-    {
-        printf("\nprint prog %d",i);
-        printChildProgramForDebug((job->progs)+i);
-    }
-    printf("\n");
 }
 
 
@@ -405,18 +365,6 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         return 0;
     } else if (!strcmp(newJob.progs[0].argv[0], "fg") ||
                !strcmp(newJob.progs[0].argv[0], "bg")) {
- 
-         // FILL IN HERE
-	// First of all do some syntax checking. 
-	// If the syntax check fails return 1
-	// else find the job in the job list 
-  	// If job not found return 1
-	// If strcmp(newJob.progs[0].argv[0] == "f"
-	// then put the job you found in the foreground (use tcsetpgrp)
-	// Don't forget to update the fg field in jobList
-	// In any case restart the processes in the job by calling 
-	// kill(-job->pgrp, SIGCONT). Don't forget to set isStopped = 0   
-	// in every proicess and stoppedProgs = 0 in the job
         char *arg=newJob.progs[0].argv[1];
         if(*arg!='%'){
               fprintf(stderr, "invalid format\n");
@@ -433,26 +381,6 @@ int runCommand(struct job newJob, struct jobSet * jobList,
               fprintf(stderr, "job not found\n");
               return 1;
         }
-       /* if(strcmp(newJob.progs[0].argv[0], "fg")==0){
-            printf("give it to fg-%d , handle only bg to fg now\n",jobId);
-
-            jobList->fg = job;
-            printf("a1\n");
-
-            if (tcsetpgrp(0, job->pgrp)){
-                perror("tcsetpgrp");
-            }
-
-            printf("a2\n");
-          kill(-job->pgrp, SIGCONT);//todo : need to check errors
-
-            printf("a3\n");
-            markJobAsRunning(job);
-
-        } else{
-            printf("give it to bg-%d\n",jobId);
-            //dummy
-        }*/
 
         if(strcmp(newJob.progs[0].argv[0], "fg")==0){
             jobList->fg = job;
@@ -460,7 +388,9 @@ int runCommand(struct job newJob, struct jobSet * jobList,
                 perror("tcsetpgrp");
             }
         }
-        kill(-job->pgrp, SIGCONT);//todo : need to check errors
+        if (!kill(-job->pgrp, SIGCONT)){
+                perror("kill");
+        }
         markJobAsRunning(job);
         return 0;
     }
@@ -641,8 +571,7 @@ int main(int argc, char ** argv) {
     signal (SIGTSTP, SIG_IGN);
     signal (SIGTTIN, SIG_IGN);
     signal (SIGTTOU, SIG_IGN);  
- //
-//fg, a staff , b3 b1 b4 b1 b4
+    
     while (1) {
         if (!jobList.fg) {
             /* no job is in the foreground */
@@ -661,7 +590,6 @@ int main(int argc, char ** argv) {
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
-            printJobForDebug(jobList.fg);
             /* a job is running in the foreground; wait for it */
             i = 0;
             while (!jobList.fg->progs[i].pid ||
