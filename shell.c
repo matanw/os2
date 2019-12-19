@@ -661,7 +661,7 @@ int main(int argc, char ** argv) {
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
-            printJobForDebug(jobList->fg);
+            printJobForDebug(jobList.fg);
             /* a job is running in the foreground; wait for it */
             i = 0;
             while (!jobList.fg->progs[i].pid ||
