@@ -388,7 +388,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
                 perror("tcsetpgrp");
             }
         }
-        if (!kill(-job->pgrp, SIGCONT)){
+        if (kill(-job->pgrp, SIGCONT)){
                 perror("kill");
         }
         markJobAsRunning(job);
