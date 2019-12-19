@@ -405,7 +405,6 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         }
 
         if (!(newJob.progs[i].pid = fork())) {
-            //chikd code 
             signal(SIGTTOU, SIG_DFL);
 
             if (nextin != 0) {
@@ -571,7 +570,7 @@ int main(int argc, char ** argv) {
     signal (SIGTSTP, SIG_IGN);
     signal (SIGTTIN, SIG_IGN);
     signal (SIGTTOU, SIG_IGN);  
-    
+
     while (1) {
         if (!jobList.fg) {
             /* no job is in the foreground */
@@ -586,7 +585,6 @@ int main(int argc, char ** argv) {
 
             if (!parseCommand(&nextCommand, &newJob, &inBg) &&
                               newJob.numProgs) {
-               // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
