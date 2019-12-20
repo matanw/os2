@@ -51,8 +51,6 @@ struct job {
 
 
 void markJobAsRunning(struct job* job){
-    //todo: assert is it works for mor than one programs
-    job->runningProgs+= job->stoppedProgs;
    for (int i = 0; i < job->numProgs; ++i)
     {
        ((job->progs)+i)->isStopped=0;//todo: readability
