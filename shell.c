@@ -668,7 +668,7 @@ int main(int argc, char ** argv) {
             while (!jobList.fg->progs[i].pid ||
                    jobList.fg->progs[i].isStopped) i++;
 
-            printf("whilesuccess\n");
+            printf("while success i is %d\n",i);
 
             waitpid(jobList.fg->progs[i].pid, &status, WUNTRACED);
 
