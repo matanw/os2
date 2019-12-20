@@ -674,9 +674,12 @@ int main(int argc, char ** argv) {
                 /* the child exited */
                 jobList.fg->runningProgs--;
                 jobList.fg->progs[i].pid = 0;
+
+                printf("jobs exitied and after --, runningProgs is %d \n",  jobList.fg->runningProgs );
             
                 if (!jobList.fg->runningProgs) {
                     /* child exited */
+                    printf("removing job...");
 
                     removeJob(&jobList, jobList.fg);
                     jobList.fg = NULL;
