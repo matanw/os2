@@ -403,6 +403,11 @@ int runCommand(struct job newJob, struct jobSet * jobList,
 
 
         return 0;
+    } else if (!strcmp(newJob.progs[0].argv[0], "describe")) {
+         for(struct job *job=jobList->head; job;job=job->next){
+          printJobForDebug(job);
+        }
+        return 0;
     } else if (!strcmp(newJob.progs[0].argv[0], "fg") ||
                !strcmp(newJob.progs[0].argv[0], "bg")) {
  
