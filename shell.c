@@ -668,6 +668,8 @@ int main(int argc, char ** argv) {
             while (!jobList.fg->progs[i].pid ||
                    jobList.fg->progs[i].isStopped) i++;
 
+            printf("whilesuccess\n");
+
             waitpid(jobList.fg->progs[i].pid, &status, WUNTRACED);
 
             if (WIFEXITED(status) || WIFSIGNALED(status)) {
@@ -679,7 +681,7 @@ int main(int argc, char ** argv) {
             
                 if (!jobList.fg->runningProgs) {
                     /* child exited */
-                    printf("removing job...");
+                    printf("removing job...\n");
 
                     removeJob(&jobList, jobList.fg);
                     jobList.fg = NULL;
