@@ -59,43 +59,6 @@ void markJobAsRunning(struct job* job){
 
 }
 
-void printChildProgramForDebug(struct childProgram * childProgram){
-
-    printf("\n program.pid = %jd", (intmax_t) childProgram->pid);// pid_t pgrp;/* process group ID for the job */
-    /*int i=0;
-    for(char *s=*(childProgram->argv);s;s++){
-        printf("\n program.argv[%d] = %s", i, s); 
-        i++;
-    }*/
-    for(char i=0;childProgram->argv[i];i++){
-        printf("\n program.argv[%d] = %s", i, childProgram->argv[i]); 
-    }
-    printf("\n program.numbRedirections = %d", childProgram->numRedirections);    /* elements in redirection array */
-   // glob_t globResult;      /* result of parameter globbing */
-    printf("\n program.freeGlob = %d", childProgram->freeGlob);           /* should we globfree(&globResult)? */
-    printf("\n program.isStopped = %d", childProgram->isStopped);          /* is the program currently running? */
-}
-
-void printJobForDebug(struct job *job){
-
-    printf("A job:");
-    printf("\njob id: %d,",job->jobId);              /* job number */
-    printf("\nrunning progs: %d,", job->runningProgs);       /* number of programs running */
-    printf("\ntext: %s,",job->text);            /* name of job */
-    printf("\ncmd buf: %s,",job->cmdBuf);          /* buffer various argv's point into */
-    printf("\npgrp = %jd\n", (intmax_t) job->pgrp);// pid_t pgrp;/* process group ID for the job */
-  // todo: struct childProgram * progs; /* array of programs in job */
-    //  struct job * next;    
-    printf("\nstopped progs: %d,",job->stoppedProgs);       /* number of programs alive, but stopped */
-    printf("\nnum progs:%d,",job->numProgs);           /* total number of programs in job */
-    for (int i = 0; i < job->numProgs; ++i)
-    {
-        printf("\nprint prog %d",i);
-        printChildProgramForDebug((job->progs)+i);
-    }
-    printf("\n");
-}
-
 
 void freeJob(struct job * cmd) {
     int i;
@@ -180,11 +143,10 @@ void globLastArgument(struct childProgram * prog, int * argcPtr,
 int parseCommand(char ** commandPtr, struct job * job, int * isBg) {
     char * command;
     char * returnCommand = NULL;
-    char * src, * buf, * chptr;
+    char * src, * buf;
     int argc = 0;
     int done = 0;
     int argvAlloced;
-    int i;
     char quote = '\0';  
     int count;
     struct childProgram * prog;
@@ -366,8 +328,6 @@ int runCommand(struct job newJob, struct jobSet * jobList,
     int i, len;
     int nextin, nextout;
     int pipefds[2];             /* pipefd[0] is for reading */
-    char * statusString;
-    int jobNum;
 
     /* handle built-ins here -- we don't fork() so we can't background
        these very easily */
@@ -385,7 +345,7 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         free(buf);
         return 0;
     } else if (!strcmp(newJob.progs[0].argv[0], "cd")) {
-        if (!newJob.progs[0].argv[1] == 1) 
+        if ((!newJob.progs[0].argv[1]) == 1) 
             newdir = getenv("HOME");
         else 
             newdir = newJob.progs[0].argv[1];
@@ -399,11 +359,6 @@ int runCommand(struct job newJob, struct jobSet * jobList,
         }
 
 
-        return 0;
-    } else if (!strcmp(newJob.progs[0].argv[0], "describe")) {
-         for(struct job *job=jobList->head; job;job=job->next){
-          printJobForDebug(job);
-        }
         return 0;
     } else if (!strcmp(newJob.progs[0].argv[0], "fg") ||
                !strcmp(newJob.progs[0].argv[0], "bg")) {
@@ -659,18 +614,13 @@ int main(int argc, char ** argv) {
 
             if (!parseCommand(&nextCommand, &newJob, &inBg) &&
                               newJob.numProgs) {
-               // printJobForDebug(&newJob);
                 runCommand(newJob, &jobList, inBg);
             }
         } else {
-            //printJobForDebug(jobList.fg);
-            printf("enter this\n");
             /* a job is running in the foreground; wait for it */
             i = 0;
             while (!jobList.fg->progs[i].pid ||
                    jobList.fg->progs[i].isStopped) i++;
-
-            printf("while success i is %d\n",i);
 
             waitpid(jobList.fg->progs[i].pid, &status, WUNTRACED);
 
@@ -678,12 +628,8 @@ int main(int argc, char ** argv) {
                 /* the child exited */
                 jobList.fg->runningProgs--;
                 jobList.fg->progs[i].pid = 0;
-
-                printf("jobs exitied and after --, runningProgs is %d \n",  jobList.fg->runningProgs );
-            
                 if (!jobList.fg->runningProgs) {
                     /* child exited */
-                    printf("removing job...\n");
 
                     removeJob(&jobList, jobList.fg);
                     jobList.fg = NULL;
